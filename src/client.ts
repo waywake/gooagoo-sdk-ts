@@ -1,6 +1,7 @@
 import { formatTimestamp } from "./time";
 import { sign, type SignableParams } from "./sign";
 import type {
+  BillDetailImportPayload,
   BillImportPayload,
   GooagooClientOptions,
   GooagooPublicParams,
@@ -12,6 +13,7 @@ export const DEFAULT_ENDPOINT = "http://api.syandata.com/oapi/rest";
 export const TEST_ENDPOINT = "http://api.test.goago.cn/oapi/rest";
 export const ROUTING_METHOD = "gogo.open.auto.routing";
 export const BILL_IMPORT_METHOD = "com.gooagoo.exportbill";
+export const BILL_DETAIL_IMPORT_METHOD = "com.gooagoo.exportbilldetail";
 
 export class GooagooError extends Error {
   constructor(
@@ -45,6 +47,13 @@ export class GooagooClient {
     options: RequestOptions = {},
   ): Promise<GooagooResponse<string>> {
     return this.request<string>(BILL_IMPORT_METHOD, payload, options);
+  }
+
+  async importBillDetail(
+    payload: BillDetailImportPayload,
+    options: RequestOptions = {},
+  ): Promise<GooagooResponse<string>> {
+    return this.request<string>(BILL_DETAIL_IMPORT_METHOD, payload, options);
   }
 
   buildRequestParams(

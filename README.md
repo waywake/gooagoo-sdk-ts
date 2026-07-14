@@ -53,6 +53,37 @@ const response = await client.importBill({
 console.log(response);
 ```
 
+## Bill Detail Import
+
+Use `importBillDetail` when Gooagoo must receive the product and payment details
+for each bill. It calls `com.gooagoo.exportbilldetail` and requires both detail
+arrays:
+
+```ts
+const response = await client.importBillDetail({
+  terminalNumber: "6A53BB2D7CDE",
+  saleTime: "2026-07-06 10:00:00",
+  billType: "1",
+  exactBillType: "10101",
+  billSerialNumber: "BILL-20260706-0001",
+  thirdPartyOrderNo: "ORDER-20260706-0001",
+  totalNum: 1,
+  totalFee: 10,
+  paidAmount: 10,
+  receivableAmount: 10,
+  goodsDetails: [
+    {
+      name: "测试商品",
+      price: 10,
+      totalnum: 1,
+      totalprice: 10,
+      unit: "件",
+    },
+  ],
+  settlementWay: [{ p: "现金", a: 10 }],
+});
+```
+
 The SDK sends `application/x-www-form-urlencoded` requests to `/oapi/rest` and signs all non-empty public parameters with:
 
 ```txt

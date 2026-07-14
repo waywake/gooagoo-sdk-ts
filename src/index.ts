@@ -1,4 +1,5 @@
 export {
+  BILL_DETAIL_IMPORT_METHOD,
   BILL_IMPORT_METHOD,
   DEFAULT_ENDPOINT,
   GooagooClient,
@@ -9,6 +10,8 @@ export {
 export { buildSignString, md5Upper, sign } from "./sign";
 export { formatTimestamp } from "./time";
 export type {
+  BillDetailGoods,
+  BillDetailImportPayload,
   BillImportPayload,
   BillType,
   ExactBillType,

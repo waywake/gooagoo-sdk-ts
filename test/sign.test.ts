@@ -1,5 +1,12 @@
 import { describe, expect, test } from "bun:test";
-import { GooagooClient, TEST_ENDPOINT, buildSignString, formatTimestamp, sign } from "../src";
+import {
+  BILL_DETAIL_IMPORT_METHOD,
+  GooagooClient,
+  TEST_ENDPOINT,
+  buildSignString,
+  formatTimestamp,
+  sign,
+} from "../src";
 
 describe("sign", () => {
   test("sorts non-empty params by key and appends secret key", () => {
@@ -47,6 +54,52 @@ describe("client", () => {
     expect(params.timestamp).toBe("20260706100304");
     expect(params.data).toBe('{"terminalNumber":"6A53BB2D7CDE","paidAmount":1}');
     expect(params.sign).toMatch(/^[A-F0-9]{32}$/);
+  });
+
+  test("imports bill details with the detail lower method", async () => {
+    let requestBody: URLSearchParams | undefined;
+    const client = new GooagooClient({
+      endpoint: TEST_ENDPOINT,
+      appId: "app-id",
+      appKey: "app-key",
+      secretKey: "secret",
+      fetch: (async (_input, init) => {
+        requestBody = init?.body as URLSearchParams;
+        return new Response(
+          JSON.stringify({
+            rescode: "OPEN_SUCCESS",
+            resmsg: "账单导入成功",
+            data: "成功",
+          }),
+        );
+      }) as typeof fetch,
+    });
+
+    const response = await client.importBillDetail(
+      {
+        terminalNumber: "6A53BB2D7CDE",
+        saleTime: "2026-07-06 10:00:00",
+        billType: "1",
+        exactBillType: "10101",
+        billSerialNumber: "BILL-1",
+        thirdPartyOrderNo: "ORDER-1",
+        totalNum: 1,
+        totalFee: 10,
+        paidAmount: 10,
+        receivableAmount: 10,
+        goodsDetails: [
+          { name: "测试商品", price: 10, totalnum: 1, totalprice: 10 },
+        ],
+        settlementWay: [{ p: "现金", a: 10 }],
+      },
+      { timestamp: "20260706100000" },
+    );
+
+    expect(requestBody?.get("lowerMethod")).toBe(BILL_DETAIL_IMPORT_METHOD);
+    expect(JSON.parse(requestBody?.get("data") ?? "{}").goodsDetails).toEqual([
+      { name: "测试商品", price: 10, totalnum: 1, totalprice: 10 },
+    ]);
+    expect(response.data).toBe("成功");
   });
 
   test("formats timestamps in local time", () => {

@@ -67,6 +67,16 @@ export interface GoodsDetail {
   [key: string]: unknown;
 }
 
+/** 商品明细。账单导入（明细）接口要求单价和总价必传。 */
+export interface BillDetailGoods {
+  name: string;
+  price: number;
+  totalnum?: number;
+  totalprice: number;
+  unit?: string;
+  [key: string]: unknown;
+}
+
 export interface BillImportPayload {
   terminalNumber: string;
   saleTime: string;
@@ -95,6 +105,18 @@ export interface BillImportPayload {
   goodsDetails?: GoodsDetail[];
   pickupNo?: string;
   [key: string]: unknown;
+}
+
+/**
+ * 账单导入（明细）请求参数。
+ *
+ * 明细接口要求结账单和退款单携带商品、支付明细。为避免调用方
+ * 根据 billType 分支时丢失必填项，SDK 对所有明细请求统一设为必填。
+ */
+export interface BillDetailImportPayload
+  extends Omit<BillImportPayload, "goodsDetails" | "settlementWay"> {
+  goodsDetails: BillDetailGoods[];
+  settlementWay: SettlementWay[];
 }
 
 export interface RequestOptions {
